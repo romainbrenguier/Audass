@@ -99,7 +99,7 @@ struct
 	else
 	  match t.incomparable, t.smaller with
 	  | None, None -> empty
-	  | Some a, None | None, Some a -> a
+	  | Some a, None | None, Some a -> aux a
 	  | Some a, Some b ->
 	    union (aux a) (aux b)
 	  

@@ -1,18 +1,3 @@
-(*let test_value (ax,ay) (bx,by) = 
-  let open Arithm in
-  let open Filter in
-  let f = (var "x") >= (var "y") * (var "a") + (var "b") in
-  let a v = 
-    if v = "x" then Some (string_of_int ax)
-    else if v = "y" then Some (string_of_int ay) else None
-  in
-  let b v = 
-    if v = "x" then Some (string_of_int bx) 
-    else if v = "y" then Some (string_of_int by) else None 
-  in
-  (f,a,b)
-*)  
-
 module Set = Tree.Make(Tree.PositiveIntFiltering)
 
 let test = 
@@ -33,21 +18,55 @@ let test =
       Printf.printf "Filtered:\n";
       List.iter (fun x -> Printf.printf "%d; " x) (Set.elements (Set.filter (fun x -> None) accu));
       Printf.printf "Exiting.\n"
-  in loop Set.empty
+  in
+  ()
+  (* loop Set.empty *)
+
+
+module Point = 
+struct
+  type t = {x : int; y : int }
+  let filter p =
+    let open Arithm in
+    let open Filter in
+    (cst p.x) >= (cst p.y) * (var "a") + (var "b")
+end
+
+
+module PointSet = Tree.Make(Point)
+
+let test = 
+
+  print_endline "a";
+  let a = read_int () in
+  print_endline "b";
+  let b = read_int () in
+
+  let rec loop1 accu = 
+    let res = 
+      try 
+	print_endline "x";
+	let x = read_int () in
+	print_endline "y";
+	let y = read_int () in
+	Some (PointSet.add {Point.x=x;Point.y=y} accu)
+      with
+      | End_of_file | Failure _ -> None
+    in 
+    match res with Some a -> loop1 a
+    | None ->
+      let point_to_string p = Printf.sprintf "%d , %d; " p.Point.x p.Point.y in
+      let print_point p = print_endline (point_to_string p) in
+      List.iter print_point (PointSet.elements accu);
+      Printf.printf "Tree:\n";
+      PointSet.to_string point_to_string accu;
+      Printf.printf "Filtered:\n";
+      List.iter print_point (PointSet.elements (PointSet.filter (fun s -> if s = "a" then Some a else if s = "b" then Some b else None) accu));
+      Printf.printf "Exiting.\n"
+  in
+
+
+  loop1 PointSet.empty
   
-(*kprint_endline "a.x";
-  let ax = read_int () in
-  print_endline "a.y";
-  let ay = read_int () in
-  print_endline "b.x";
-  let bx = read_int () in
-      print_endline "b.y";
-  let by = read_int () in
-  let f,a,b = test_value (ax,ay) (bx,by) in
-      match Filter.gen_compare f a b with
-  | Smaller -> print_endline "smaller"
-  | Greater -> print_endline "smaller"
-  | Equivalent -> print_endline "equivalent"
-  | Incomparable -> print_endline "incomparable"*)
   
 
