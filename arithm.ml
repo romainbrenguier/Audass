@@ -3,11 +3,6 @@ type t = Const of int | Var of string | Arithm of (string * t * t)
 let cst i = Const i
 let var s = Var s
 let arithm s a b = Arithm (s,a,b)
-let (+) a b = arithm "+" a b
-let (-) a b = arithm "-" a b
-let ( * ) a b = arithm "*" a b
-let (/) a b = arithm "/" a b
-let (%) a b = arithm "%" a b
   
 let rec to_smt buf = function
   | Const i -> output_string buf (string_of_int i)
@@ -24,3 +19,16 @@ let rec free_variables = function
   | Var s -> [s]
   | Arithm (s,a,b) -> List.merge compare (free_variables a) (free_variables b)
 
+exception UnsubstitedVariables
+let rec eval = function
+  | Const i -> i
+  | Arithm (s,a,b) -> 
+    let op = match s with "+" -> (+) | "*" -> ( * ) | "-" -> (-) in
+    op (eval a) (eval b)
+  | _ -> raise UnsubstitedVariables
+
+let (+) a b = arithm "+" a b
+let (-) a b = arithm "-" a b
+let ( * ) a b = arithm "*" a b
+let (/) a b = arithm "/" a b
+let (%) a b = arithm "%" a b

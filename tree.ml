@@ -93,7 +93,7 @@ struct
     and aux t = match t.value with
       | None -> empty
       | Some value -> 
-	if Filter.is_valid (Filter.substitute substitution (F.filter value))
+	if Filter.eval (Filter.substitute substitution (F.filter value))
 	then 
 	  {t with greater = opt_aux t.greater; incomparable = opt_aux t.incomparable}
 	else

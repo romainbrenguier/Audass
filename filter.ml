@@ -20,9 +20,6 @@ let rec free_variables = function
   | Logic (p,a,b) -> List.merge compare (free_variables a) (free_variables b)
   | Prop (s,a,b) ->  List.merge compare (Arithm.free_variables a) (Arithm.free_variables b)
 
-let ( => ) = logic "=>"
-let ( == ) = prop "=="
-let ( >= ) = prop ">="
 
 let rec to_smt buf = function
   | Bool b -> Printf.fprintf buf "%b" b
@@ -66,6 +63,17 @@ let is_valid formula =
   else if res = "unsat" then false
   else failwith (Printf.sprintf "unknown result: %s\n" res)
 
+exception QuantifiedFormula
+let rec eval = function
+  | Prop (s, a, b) -> 
+    let op = match s with "==" -> ( = ) | ">=" -> ( >= ) in
+    op (Arithm.eval a) (Arithm.eval b)
+  | Logic (s, a, b) -> 
+    (match s with "=>" -> (eval b) || not (eval a))
+  | Bool x -> x
+  | Forall _ -> raise QuantifiedFormula
+
+  
 
 type order = Smaller | Greater | Equivalent | Incomparable
 
@@ -77,3 +85,7 @@ let gen_compare f a b =
   | false, false -> Incomparable
 
 
+
+let ( => ) = logic "=>"
+let ( == ) = prop "=="
+let ( >= ) = prop ">="
