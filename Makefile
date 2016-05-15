@@ -1,3 +1,3 @@
-main.native: main.ml
+main.native: *.ml
 	ocamlbuild -lib unix main.native
 

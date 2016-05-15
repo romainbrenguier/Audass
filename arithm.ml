@@ -10,7 +10,7 @@ let (/) a b = arithm "/" a b
 let (%) a b = arithm "%" a b
   
 let rec to_smt buf = function
-  | Const i -> output_int buf i
+  | Const i -> output_string buf (string_of_int i)
   | Var s -> output_string buf s
   | Arithm (s,a,b) -> Printf.fprintf buf "(%s %a %a)" s to_smt a to_smt b
     

@@ -10,5 +10,6 @@ val ( >= ) : Arithm.t -> Arithm.t -> t
 val to_smt : out_channel -> t -> unit
 val is_valid : t -> bool
 type order = Smaller | Greater | Equivalent | Incomparable
-val gen_compare : t -> (string -> int option) -> (string -> int option) -> order
+(** term is greater if it is more often true *)
+val gen_compare : ('a -> t) -> 'a -> 'a -> order
 

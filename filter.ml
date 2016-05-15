@@ -41,8 +41,9 @@ let remove_duplicates l =
   
 
 let implication f a b =
-  let s1 = substitute a f in
-  let s2 = substitute b f in
+  (* let s1 = substitute a f in*)
+  (* let s2 = substitute b f in*)
+  let s1, s2 = f a, f b in
   let free = 
     List.merge compare (free_variables s1) (free_variables s2) 
   |> remove_duplicates
