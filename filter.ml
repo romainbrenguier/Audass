@@ -54,14 +54,19 @@ let implication f a b =
   
 
 let is_valid formula = 
+  Log.debug "is_valid";
   let tmp = open_out "selector_tmp.smt" in
   Printf.fprintf tmp "(assert %a)\n(check-sat)\n; sat\n" to_smt formula;
   close_out tmp;
   let inch = Unix.open_process_in "z3 -smt2 selector_tmp.smt" in
   let res = input_line inch in
-  if res = "sat" then true
-  else if res = "unsat" then false
-  else failwith (Printf.sprintf "unknown result: %s\n" res)
+  let return_value = 
+    if res = "sat" then true
+    else if res = "unsat" then false
+    else failwith (Printf.sprintf "unknown result: %s\n" res)
+  in 
+  close_in inch;
+  return_value
 
 exception QuantifiedFormula
 let rec eval = function
